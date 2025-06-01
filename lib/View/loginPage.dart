@@ -7,6 +7,9 @@ import 'package:reuse_mart/view/pembeliHome.dart';
 import 'package:reuse_mart/view/penitipHome.dart'; // Asumsi nama file untuk SellerProfilePage
 import 'package:reuse_mart/view/hunterHome.dart'; // Asumsi nama file untuk HunterProfilePage
 import 'package:reuse_mart/view/kurirHome.dart'; // Asumsi nama file untuk CourierProfilePage
+import 'package:firebase_messaging/firebase_messaging.dart'; // Tambahkan untuk FCM
+import 'package:http/http.dart' as http; // Tambahkan untuk HTTP request
+import 'dart:convert'; // Tambahkan untuk JSON encoding
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -22,6 +25,37 @@ class _LoginPageState extends State<LoginPage> {
   bool _passwordVisible = false;
   bool _isLoading = false;
   String? _errorMessage;
+  static const String baseUrl = 'http://192.168.120.61:8000'; // IP komputer, sesuai ipconfig
+
+  Future<void> _updateFcmToken(String token, String fcmToken) async {
+    try {
+      final uri = Uri.parse('$baseUrl/api/update-fcm-token');
+      final response = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+        body: jsonEncode({'fcm_token': fcmToken}),
+      ).timeout(
+        const Duration(seconds: 60),
+        onTimeout: () {
+          throw TimeoutException('Request to update FCM token timed out');
+        },
+      );
+
+      print('FCM Update Status: ${response.statusCode}');
+      print('FCM Update Result: ${response.body}');
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to update FCM token');
+      }
+    } catch (e) {
+      print('FCM Update Error: $e');
+      throw Exception('Failed to update FCM token: $e');
+    }
+  }
 
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
@@ -35,6 +69,7 @@ class _LoginPageState extends State<LoginPage> {
       final authService = AuthService();
       final user = await authService.login(emailController.text, passwordController.text);
 
+      // Simpan token dan role ke SharedPreferences
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', user.token);
       await prefs.setString('role', user.role);
@@ -42,6 +77,16 @@ class _LoginPageState extends State<LoginPage> {
         await prefs.setString('jabatan', user.jabatan!);
       }
 
+      // Dapatkan FCM token
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null) {
+        // Update FCM token ke server
+        await _updateFcmToken(user.token, fcmToken);
+      } else {
+        print('FCM Token not available');
+      }
+
+      // Navigasi berdasarkan role
       if (user.role == 'pembeli') {
         Navigator.pushReplacement(
           context,

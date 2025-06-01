@@ -1,14 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:reuse_mart/client/NotificationService.dart';
 
-class Pembelihome extends StatelessWidget {
+class Pembelihome extends StatefulWidget {
   const Pembelihome({super.key});
+
+  @override
+  State<Pembelihome> createState() => _PembelihomeState();
+}
+
+class _PembelihomeState extends State<Pembelihome> {
+  final NotificationService _notificationService = NotificationService();
+
+  @override
+  void initState() {
+    super.initState();
+    // Initialize notification service
+    _notificationService.initialize(context);
+    _notificationService.checkInitialMessage(context);
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFCFBB99), // Warna background dari inspirasi
+      backgroundColor: const Color(0xFFCFBB99),
       appBar: AppBar(
-        backgroundColor: const Color(0xFF354024), // Hijau tua
+        backgroundColor: const Color(0xFF354024),
         title: const Text(
           'ReuseMart - Pembeli',
           style: TextStyle(
@@ -36,10 +52,8 @@ class Pembelihome extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Bagian Profil dan Poin Reward
             _buildProfileSection(),
             const SizedBox(height: 24),
-            // Bagian History Transaksi
             _buildTransactionHistorySection(context),
           ],
         ),
