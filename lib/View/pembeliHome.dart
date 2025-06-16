@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:reuse_mart/client/NotificationService.dart';
+import 'package:reuse_mart/View/merchandisePage.dart'; // Import halaman katalog
+import 'package:shared_preferences/shared_preferences.dart'; 
+import 'package:reuse_mart/view/loginPage.dart';
 
 class Pembelihome extends StatefulWidget {
   const Pembelihome({super.key});
@@ -14,11 +17,35 @@ class _PembelihomeState extends State<Pembelihome> {
   @override
   void initState() {
     super.initState();
-    // Initialize notification service
     _notificationService.initialize(context);
     _notificationService.checkInitialMessage(context);
   }
 
+  Future _navigateToMerchandisePage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final authToken = prefs.getString('auth_token');
+    final role = prefs.getString('role');
+
+    if (authToken != null || role == 'pembeli') {
+      // Jika tidak ada token atau bukan pembeli, arahkan ke halaman login
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const MerchandisePage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please log in as a pembeli to access merchandise.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
+      // Jika sudah login sebagai pembeli, arahkan ke halaman merchandise
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -33,6 +60,16 @@ class _PembelihomeState extends State<Pembelihome> {
           ),
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.card_giftcard, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const MerchandisePage()),
+              );
+            },
+            tooltip: 'Katalog Merchandise',
+          ),
           Padding(
             padding: const EdgeInsets.only(right: 16),
             child: GestureDetector(
@@ -66,7 +103,7 @@ class _PembelihomeState extends State<Pembelihome> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: Colors.white, // Warna card putih
+        color: Colors.white,
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -94,7 +131,7 @@ class _PembelihomeState extends State<Pembelihome> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'John Doe', // Nama pembeli (bisa diganti dengan data dinamis)
+                  'John Doe',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -103,7 +140,7 @@ class _PembelihomeState extends State<Pembelihome> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'john.doe@example.com', // Email pembeli
+                  'john.doe@example.com',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.grey[600],
@@ -119,7 +156,7 @@ class _PembelihomeState extends State<Pembelihome> {
                     ),
                     const SizedBox(width: 4),
                     Text(
-                      'Poin Reward: 150', // Poin reward (bisa diganti dengan data dinamis)
+                      'Poin Reward: 150',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.bold,
@@ -138,7 +175,6 @@ class _PembelihomeState extends State<Pembelihome> {
 
   // Widget untuk bagian history transaksi
   Widget _buildTransactionHistorySection(BuildContext context) {
-    // Data dummy untuk history transaksi
     final List<Map<String, dynamic>> transactions = [
       {
         'id': 'TRX001',
@@ -175,7 +211,7 @@ class _PembelihomeState extends State<Pembelihome> {
             ),
             GestureDetector(
               onTap: () {
-                // Navigasi ke halaman semua transaksi (opsional)
+                // Navigasi ke halaman semua transaksi
               },
               child: const Text(
                 'Lihat Semua',
@@ -241,7 +277,6 @@ class _PembelihomeState extends State<Pembelihome> {
   }
 }
 
-// Halaman untuk detail transaksi
 class TransactionDetailPage extends StatelessWidget {
   final Map<String, dynamic> transaction;
 
@@ -266,7 +301,6 @@ class TransactionDetailPage extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Informasi Umum Transaksi
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -313,7 +347,6 @@ class TransactionDetailPage extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16),
-            // Daftar Item dalam Transaksi
             const Text(
               'Item yang Dibeli',
               style: TextStyle(

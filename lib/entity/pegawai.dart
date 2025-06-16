@@ -21,14 +21,14 @@ class Pegawai {
 
   factory Pegawai.fromJson(Map<String, dynamic> json) {
     return Pegawai(
-      idPegawai: json['id_pegawai'] ?? '',
-      idJabatan: json['id_jabatan'],
+      idPegawai: (json['id_pegawai'] ?? '').toString(), // Convert to String
+      idJabatan: json['id_jabatan']?.toString(),
       namaPegawai: json['nama_pegawai'] ?? '',
-      passwordPegawai: json['password_pegawai'] ?? '', // Biasanya null dari backend
+      passwordPegawai: json['password_pegawai'] ?? '',
       usernamePegawai: json['username_pegawai'] ?? '',
       emailPegawai: json['email_pegawai'] ?? '',
       saldoPegawai: (json['saldo_pegawai'] ?? 0).toDouble(),
-      tglLahir: json['tgl_lahir'],
+      tglLahir: json['tgl_lahir']?.toString(),
     );
   }
 

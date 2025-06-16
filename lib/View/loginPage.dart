@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:reuse_mart/View/hunterHome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:reuse_mart/entity/user.dart'; // Sesuaikan path
-import 'package:reuse_mart/client/loginClient.dart'; // Sesuaikan path
+import 'package:reuse_mart/entity/user.dart';
+import 'package:reuse_mart/client/loginClient.dart'; 
 import 'package:reuse_mart/view/pembeliHome.dart';
-import 'package:reuse_mart/view/penitipHome.dart'; // Asumsi nama file untuk SellerProfilePage
-import 'package:reuse_mart/view/hunterHome.dart'; // Asumsi nama file untuk HunterProfilePage
-import 'package:reuse_mart/view/kurirHome.dart'; // Asumsi nama file untuk CourierProfilePage
-import 'package:firebase_messaging/firebase_messaging.dart'; // Tambahkan untuk FCM
-import 'package:http/http.dart' as http; // Tambahkan untuk HTTP request
-import 'dart:convert'; // Tambahkan untuk JSON encoding
+import 'package:reuse_mart/view/penitipHome.dart'; 
+import 'package:reuse_mart/view/kurirHome.dart'; 
+import 'package:firebase_messaging/firebase_messaging.dart'; 
+import 'package:http/http.dart' as http; 
+import 'dart:convert'; 
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -25,7 +25,7 @@ class _LoginPageState extends State<LoginPage> {
   bool _passwordVisible = false;
   bool _isLoading = false;
   String? _errorMessage;
-  static const String baseUrl = 'http://192.168.120.61:8000'; // IP komputer, sesuai ipconfig
+  static const String baseUrl = 'http://192.168.35.56:8000'; // IP komputer, sesuai ipconfig
 
   Future<void> _updateFcmToken(String token, String fcmToken) async {
     try {
@@ -73,6 +73,12 @@ class _LoginPageState extends State<LoginPage> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', user.token);
       await prefs.setString('role', user.role);
+      if (user.role == 'pembeli' && user.id != null) {
+        await prefs.setInt('id_pembeli', user.id!);
+      }
+      if(user.role == 'pegawai' && user.id_pegawai != null) {
+        await prefs.setString('id_pegawai', user.id_pegawai!);
+      }
       if (user.jabatan != null) {
         await prefs.setString('jabatan', user.jabatan!);
       }

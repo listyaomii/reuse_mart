@@ -41,48 +41,47 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyCsBa9J_9XCnMJ67Ao50weP3_ONb7UGMBM',
-    appId: '1:686617245355:web:a758e918925b39355529ee',
-    messagingSenderId: '686617245355',
-    projectId: 'reusemart-4735d',
-    authDomain: 'reusemart-4735d.firebaseapp.com',
-    storageBucket: 'reusemart-4735d.firebasestorage.app',
-    measurementId: 'G-EFN16DSVYC',
+    apiKey: 'AIzaSyCm4SGevAfFGGvSpjjdEt_8t27HakRTbek',
+    appId: '1:585325962794:web:8c64be9cd84185ec528553',
+    messagingSenderId: '585325962794',
+    projectId: 'reusemart-f002c',
+    authDomain: 'reusemart-f002c.firebaseapp.com',
+    storageBucket: 'reusemart-f002c.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyBL7JsmawaQEWYWzjYeN_HpbSHbRQBcXyE',
-    appId: '1:686617245355:android:6627eda2f84d8ef45529ee',
-    messagingSenderId: '686617245355',
-    projectId: 'reusemart-4735d',
-    storageBucket: 'reusemart-4735d.firebasestorage.app',
+    apiKey: 'AIzaSyDbybt4eLxreFBCVrKSK5c8GmRkppWIUok',
+    appId: '1:585325962794:android:a257ac105fd932fa528553',
+    messagingSenderId: '585325962794',
+    projectId: 'reusemart-f002c',
+    storageBucket: 'reusemart-f002c.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAVYSuWnyjIBJ4_oyhLtRWHbL3qN0p10g4',
-    appId: '1:686617245355:ios:d7672a2bb4076b695529ee',
-    messagingSenderId: '686617245355',
-    projectId: 'reusemart-4735d',
-    storageBucket: 'reusemart-4735d.firebasestorage.app',
+    apiKey: 'AIzaSyDaY0JxMWJhhGFhcVPAi5zGz9eUlEqfKpM',
+    appId: '1:585325962794:ios:b8b761fdcc5d7de2528553',
+    messagingSenderId: '585325962794',
+    projectId: 'reusemart-f002c',
+    storageBucket: 'reusemart-f002c.firebasestorage.app',
     iosBundleId: 'com.example.reuseMart',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyAVYSuWnyjIBJ4_oyhLtRWHbL3qN0p10g4',
-    appId: '1:686617245355:ios:d7672a2bb4076b695529ee',
-    messagingSenderId: '686617245355',
-    projectId: 'reusemart-4735d',
-    storageBucket: 'reusemart-4735d.firebasestorage.app',
+    apiKey: 'AIzaSyDaY0JxMWJhhGFhcVPAi5zGz9eUlEqfKpM',
+    appId: '1:585325962794:ios:b8b761fdcc5d7de2528553',
+    messagingSenderId: '585325962794',
+    projectId: 'reusemart-f002c',
+    storageBucket: 'reusemart-f002c.firebasestorage.app',
     iosBundleId: 'com.example.reuseMart',
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
-    apiKey: 'AIzaSyCsBa9J_9XCnMJ67Ao50weP3_ONb7UGMBM',
-    appId: '1:686617245355:web:aa2a17ae29365a205529ee',
-    messagingSenderId: '686617245355',
-    projectId: 'reusemart-4735d',
-    authDomain: 'reusemart-4735d.firebaseapp.com',
-    storageBucket: 'reusemart-4735d.firebasestorage.app',
-    measurementId: 'G-3MWED2796S',
+    apiKey: 'AIzaSyCm4SGevAfFGGvSpjjdEt_8t27HakRTbek',
+    appId: '1:585325962794:web:d93684ddfcb38160528553',
+    messagingSenderId: '585325962794',
+    projectId: 'reusemart-f002c',
+    authDomain: 'reusemart-f002c.firebaseapp.com',
+    storageBucket: 'reusemart-f002c.firebasestorage.app',
   );
+
 }
