@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:reuse_mart/entity/user.dart'; // Sesuaikan path
-import 'package:reuse_mart/client/loginClient.dart'; // Sesuaikan path
+import 'package:reuse_mart/entity/user.dart';
+import 'package:reuse_mart/client/loginClient.dart';
 import 'package:reuse_mart/view/pembeliHome.dart';
-import 'package:reuse_mart/view/penitipHome.dart'; // Asumsi nama file untuk SellerProfilePage
-import 'package:reuse_mart/view/hunterHome.dart'; // Asumsi nama file untuk HunterProfilePage
-import 'package:reuse_mart/view/kurirHome.dart'; // Asumsi nama file untuk CourierProfilePage
-import 'package:firebase_messaging/firebase_messaging.dart'; // Tambahkan untuk FCM
-import 'package:http/http.dart' as http; // Tambahkan untuk HTTP request
-import 'dart:convert'; // Tambahkan untuk JSON encoding
+import 'package:reuse_mart/view/penitipHome.dart';
+// import 'package:reuse_mart/view/hunterHome.dart';
+// import 'package:reuse_mart/view/kurirHome.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -25,12 +25,13 @@ class _LoginPageState extends State<LoginPage> {
   bool _passwordVisible = false;
   bool _isLoading = false;
   String? _errorMessage;
-  static const String baseUrl = 'http://192.168.120.61:8000'; // IP komputer, sesuai ipconfig
+  static const String baseUrl = 'http://10.0.2.2:8000';
 
   Future<void> _updateFcmToken(String token, String fcmToken) async {
     try {
       final uri = Uri.parse('$baseUrl/api/update-fcm-token');
-      final response = await http.post(
+      final response = await http
+          .post(
         uri,
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +39,8 @@ class _LoginPageState extends State<LoginPage> {
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode({'fcm_token': fcmToken}),
-      ).timeout(
+      )
+          .timeout(
         const Duration(seconds: 60),
         onTimeout: () {
           throw TimeoutException('Request to update FCM token timed out');
@@ -57,6 +59,17 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // Clear session sebelum login baru
+  Future<void> _clearSession() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      print('Session cleared successfully');
+    } catch (e) {
+      print('Error clearing session: $e');
+    }
+  }
+
   Future<void> _login() async {
     if (!_formKey.currentState!.validate()) return;
 
@@ -66,59 +79,85 @@ class _LoginPageState extends State<LoginPage> {
     });
 
     try {
-      final authService = AuthService();
-      final user = await authService.login(emailController.text, passwordController.text);
+      // Clear session terlebih dahulu sebelum login
+      await _clearSession();
 
-      // Simpan token dan role ke SharedPreferences
+      final authService = AuthService();
+      final user = await authService.login(
+          emailController.text, passwordController.text);
+
+      // Simpan data session baru
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', user.token);
       await prefs.setString('role', user.role);
+      await prefs.setString('user_email', emailController.text);
+
       if (user.jabatan != null) {
         await prefs.setString('jabatan', user.jabatan!);
       }
 
+      print(
+          'Login successful - Role: ${user.role}, Token saved: ${user.token.substring(0, 20)}...');
+
       // Dapatkan FCM token
       String? fcmToken = await FirebaseMessaging.instance.getToken();
       if (fcmToken != null) {
-        // Update FCM token ke server
         await _updateFcmToken(user.token, fcmToken);
       } else {
         print('FCM Token not available');
       }
 
-      // Navigasi berdasarkan role
-      if (user.role == 'pembeli') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const Pembelihome()),
-        );
-      } else if (user.role == 'penitip') {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const SellerProfilePage()),
-        );
-      } else if (user.role == 'pegawai') {
-        if (user.jabatan == 'hunter') {
+      // Navigasi berdasarkan role (hanya pembeli dan penitip)
+      if (mounted) {
+        if (user.role == 'pembeli') {
+          print('Navigating to Pembeli Home');
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const HunterProfilePage()),
+            MaterialPageRoute(builder: (context) => const Pembelihome()),
           );
-        } else if (user.jabatan == 'kurir') {
+        } else if (user.role == 'penitip') {
+          print('Navigating to Penitip Home');
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => const CourierProfilePage()),
+            MaterialPageRoute(
+              // ✅ Fixed: Pass token as named parameter properly
+              builder: (context) => SellerProfilePage(token: user.token),
+            ),
           );
-        } else {
+        }
+        // Comment dulu untuk hunter dan kurir
+        /*
+        else if (user.role == 'pegawai') {
+          if (user.jabatan == 'hunter') {
+            print('Navigating to Hunter Home');
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const HunterProfilePage()),
+            );
+          } else if (user.jabatan == 'kurir') {
+            print('Navigating to Kurir Home');
+            Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const CourierProfilePage()),
+            );
+          } else {
+            setState(() {
+              _errorMessage = 'Jabatan tidak dikenali: ${user.jabatan}';
+            });
+          }
+        } 
+        */
+        else {
           setState(() {
-            _errorMessage = 'Jabatan tidak dikenali';
+            _errorMessage =
+                'Role tidak dikenali atau belum tersedia: ${user.role}';
           });
         }
-      } else {
-        setState(() {
-          _errorMessage = 'Role tidak dikenali';
-        });
       }
     } catch (e) {
+      print('Login error: $e');
       setState(() {
         _errorMessage = e.toString();
       });
@@ -196,14 +235,29 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 16),
               if (_errorMessage != null)
-                Text(
-                  _errorMessage!,
-                  style: const TextStyle(color: Colors.red),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red.withOpacity(0.3)),
+                  ),
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               const SizedBox(height: 20),
               _isLoading
-                  ? const CircularProgressIndicator(
-                      color: Color(0xFF354024),
+                  ? const Column(
+                      children: [
+                        CircularProgressIndicator(
+                          color: Color(0xFF354024),
+                        ),
+                        SizedBox(height: 8),
+                        Text('Sedang login...'),
+                      ],
                     )
                   : ElevatedButton(
                       onPressed: _login,

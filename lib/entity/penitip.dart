@@ -2,6 +2,7 @@ class Penitip {
   final String idPenitip;
   final String? idPegawai;
   final String namaPenitip;
+  final String? alamat;  // Tambahan field alamat
   final double saldoPenitip;
   final String email;
   final String usernamePenitip;
@@ -14,6 +15,7 @@ class Penitip {
     required this.idPenitip,
     this.idPegawai,
     required this.namaPenitip,
+    this.alamat,
     required this.saldoPenitip,
     required this.email,
     required this.usernamePenitip,
@@ -28,6 +30,7 @@ class Penitip {
       idPenitip: json['id_penitip'] ?? '',
       idPegawai: json['id_pegawai'],
       namaPenitip: json['nama_penitip'] ?? '',
+      alamat: json['alamat'], // Tambahan field alamat
       saldoPenitip: (json['saldo_penitip'] ?? 0).toDouble(),
       email: json['email'] ?? '',
       usernamePenitip: json['username_penitip'] ?? '',
@@ -43,6 +46,7 @@ class Penitip {
       'id_penitip': idPenitip,
       'id_pegawai': idPegawai,
       'nama_penitip': namaPenitip,
+      'alamat': alamat,
       'saldo_penitip': saldoPenitip,
       'email': email,
       'username_penitip': usernamePenitip,
