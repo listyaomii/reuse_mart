@@ -25,12 +25,14 @@ class _LoginPageState extends State<LoginPage> {
   bool _passwordVisible = false;
   bool _isLoading = false;
   String? _errorMessage;
-  static const String baseUrl = 'http://192.168.120.61:8000'; // IP komputer, sesuai ipconfig
+  static const String baseUrl =
+      'http://192.168.120.61:8000'; // IP komputer, sesuai ipconfig
 
   Future<void> _updateFcmToken(String token, String fcmToken) async {
     try {
       final uri = Uri.parse('$baseUrl/api/update-fcm-token');
-      final response = await http.post(
+      final response = await http
+          .post(
         uri,
         headers: {
           'Content-Type': 'application/json',
@@ -38,7 +40,8 @@ class _LoginPageState extends State<LoginPage> {
           'Authorization': 'Bearer $token',
         },
         body: jsonEncode({'fcm_token': fcmToken}),
-      ).timeout(
+      )
+          .timeout(
         const Duration(seconds: 60),
         onTimeout: () {
           throw TimeoutException('Request to update FCM token timed out');
@@ -58,76 +61,79 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
+  setState(() {
+    _isLoading = true;
+    _errorMessage = null;
+  });
 
-    try {
-      final authService = AuthService();
-      final user = await authService.login(emailController.text, passwordController.text);
+  try {
+    final authService = AuthService();
+    final user = await authService.login(
+        emailController.text, passwordController.text);
 
-      // Simpan token dan role ke SharedPreferences
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('auth_token', user.token);
-      await prefs.setString('role', user.role);
-      if (user.jabatan != null) {
-        await prefs.setString('jabatan', user.jabatan!);
-      }
+    // Simpan token dan role ke SharedPreferences
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('auth_token', user.token);
+    await prefs.setString('role', user.role);
+    if (user.jabatan != null) {
+      await prefs.setString('jabatan', user.jabatan!);
+    }
 
-      // Dapatkan FCM token
-      String? fcmToken = await FirebaseMessaging.instance.getToken();
-      if (fcmToken != null) {
-        // Update FCM token ke server
-        await _updateFcmToken(user.token, fcmToken);
-      } else {
-        print('FCM Token not available');
-      }
+    // Dapatkan FCM token
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    if (fcmToken != null) {
+      // Update FCM token ke server
+      await _updateFcmToken(user.token, fcmToken);
+    } else {
+      print('FCM Token tidak tersedia');
+    }
 
-      // Navigasi berdasarkan role
-      if (user.role == 'pembeli') {
+    // Navigasi berdasarkan role
+    if (user.role == 'pembeli') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Pembelihome()),
+      );
+    } else if (user.role == 'penitip') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const SellerProfilePage()),
+      );
+    } else if (user.role == 'pegawai') {
+      if (user.jabatan == 'hunter') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const Pembelihome()),
+          MaterialPageRoute(builder: (context) => const HunterProfilePage()),
         );
-      } else if (user.role == 'penitip') {
+      } else if (user.jabatan == 'kurir') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const SellerProfilePage()),
+          MaterialPageRoute(
+            builder: (context) => CourierProfilePage(token: user.token),
+          ),
         );
-      } else if (user.role == 'pegawai') {
-        if (user.jabatan == 'hunter') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const HunterProfilePage()),
-          );
-        } else if (user.jabatan == 'kurir') {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const CourierProfilePage()),
-          );
-        } else {
-          setState(() {
-            _errorMessage = 'Jabatan tidak dikenali';
-          });
-        }
       } else {
         setState(() {
-          _errorMessage = 'Role tidak dikenali';
+          _errorMessage = 'Jabatan tidak dikenali';
         });
       }
-    } catch (e) {
+    } else {
       setState(() {
-        _errorMessage = e.toString();
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
+        _errorMessage = 'Role tidak dikenali';
       });
     }
+  } catch (e) {
+    setState(() {
+      _errorMessage = e.toString();
+    });
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {
