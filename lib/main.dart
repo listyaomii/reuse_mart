@@ -10,7 +10,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:reuse_mart/client/loginClient.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'firebase_options.dart';
-// import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -28,6 +29,7 @@ Future<void> main() async {
     updateFcmTokenOnServer(newToken);
   });
 
+  await initializeDateFormatting('id_ID', null);
   runApp(const ProviderScope(child: MainApp()));
 }
 
