@@ -8,6 +8,8 @@ import 'dart:async'; // Tambahkan impor ini
 import 'package:firebase_messaging/firebase_messaging.dart'; // Tambahkan impor ini
 
 class AuthService {
+
+  //static const String baseUrl = 'http://192.168.35.56:8000'; // IP komputer, sesuai ipconfig
   static const String baseUrl =
       'http://10.0.2.2:8000'; // IP komputer, sesuai ipconfig
   static const String endpoint = 'api/login';

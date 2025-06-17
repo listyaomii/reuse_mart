@@ -1,1 +1,5 @@
+
+//{"flutter":{"platforms":{"android":{"default":{"projectId":"reusemart-f002c","appId":"1:585325962794:android:a257ac105fd932fa528553","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"reusemart-f002c","configurations":{"android":"1:585325962794:android:a257ac105fd932fa528553","ios":"1:585325962794:ios:b8b761fdcc5d7de2528553","macos":"1:585325962794:ios:b8b761fdcc5d7de2528553","web":"1:585325962794:web:8c64be9cd84185ec528553","windows":"1:585325962794:web:d93684ddfcb38160528553"}}}}}}
+
 {"flutter":{"platforms":{"android":{"default":{"projectId":"reusemart-2d798","appId":"1:467562307011:android:8681f1bd327685e1083176","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"reusemart-2d798","configurations":{"android":"1:467562307011:android:8681f1bd327685e1083176","ios":"1:467562307011:ios:57fc21f8652b8dac083176","macos":"1:467562307011:ios:57fc21f8652b8dac083176","web":"1:467562307011:web:1bbbae8c31d548c0083176","windows":"1:467562307011:web:491747b6b7bd5350083176"}}}}}}
+

@@ -41,6 +41,30 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
+
+    //apiKey: 'AIzaSyCm4SGevAfFGGvSpjjdEt_8t27HakRTbek',
+    //appId: '1:585325962794:web:8c64be9cd84185ec528553',
+    //messagingSenderId: '585325962794',
+    //projectId: 'reusemart-f002c',
+    //authDomain: 'reusemart-f002c.firebaseapp.com',
+    //storageBucket: 'reusemart-f002c.firebasestorage.app',
+  //);
+
+  //static const FirebaseOptions android = FirebaseOptions(
+    //apiKey: 'AIzaSyDbybt4eLxreFBCVrKSK5c8GmRkppWIUok',
+    //appId: '1:585325962794:android:a257ac105fd932fa528553',
+    //messagingSenderId: '585325962794',
+    //projectId: 'reusemart-f002c',
+    //storageBucket: 'reusemart-f002c.firebasestorage.app',
+  //);
+
+  //static const FirebaseOptions ios = FirebaseOptions(
+    //apiKey: 'AIzaSyDaY0JxMWJhhGFhcVPAi5zGz9eUlEqfKpM',
+    //appId: '1:585325962794:ios:b8b761fdcc5d7de2528553',
+    //messagingSenderId: '585325962794',
+    //projectId: 'reusemart-f002c',
+    //storageBucket: 'reusemart-f002c.firebasestorage.app',
+
     apiKey: 'AIzaSyDxafFrUJGUqr6sSZxAh7zWSpUcdKm7qwA',
     appId: '1:467562307011:web:1bbbae8c31d548c0083176',
     messagingSenderId: '467562307011',
@@ -68,6 +92,12 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
+    //apiKey: 'AIzaSyDaY0JxMWJhhGFhcVPAi5zGz9eUlEqfKpM',
+    //appId: '1:585325962794:ios:b8b761fdcc5d7de2528553',
+    //messagingSenderId: '585325962794',
+    //projectId: 'reusemart-f002c',
+    //storageBucket: 'reusemart-f002c.firebasestorage.app',
+
     apiKey: 'AIzaSyCRFxYWjKN-RTbGwV0o3DH9Npyzgbqz19A',
     appId: '1:467562307011:ios:57fc21f8652b8dac083176',
     messagingSenderId: '467562307011',
@@ -77,6 +107,13 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions windows = FirebaseOptions(
+    //apiKey: 'AIzaSyCm4SGevAfFGGvSpjjdEt_8t27HakRTbek',
+    //appId: '1:585325962794:web:d93684ddfcb38160528553',
+    //messagingSenderId: '585325962794',
+    //projectId: 'reusemart-f002c',
+    //authDomain: 'reusemart-f002c.firebaseapp.com',
+    //storageBucket: 'reusemart-f002c.firebasestorage.app',
+
     apiKey: 'AIzaSyDxafFrUJGUqr6sSZxAh7zWSpUcdKm7qwA',
     appId: '1:467562307011:web:491747b6b7bd5350083176',
     messagingSenderId: '467562307011',

@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:reuse_mart/View/hunterHome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reuse_mart/entity/user.dart';
-import 'package:reuse_mart/client/loginClient.dart';
+import 'package:reuse_mart/client/loginClient.dart'; 
 import 'package:reuse_mart/view/pembeliHome.dart';
-import 'package:reuse_mart/view/penitipHome.dart';
-// import 'package:reuse_mart/view/hunterHome.dart';
-// import 'package:reuse_mart/view/kurirHome.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:reuse_mart/view/penitipHome.dart'; 
+import 'package:reuse_mart/view/kurirHome.dart'; 
+import 'package:firebase_messaging/firebase_messaging.dart'; 
+import 'package:http/http.dart' as http; 
+import 'dart:convert'; 
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -25,7 +25,13 @@ class _LoginPageState extends State<LoginPage> {
   bool _passwordVisible = false;
   bool _isLoading = false;
   String? _errorMessage;
+
+
+  //static const String baseUrl =
+      //'http://192.168.120.61:8000'; // IP komputer, sesuai ipconfig
+
   static const String baseUrl = 'http://10.0.2.2:8000';
+
 
   Future<void> _updateFcmToken(String token, String fcmToken) async {
     try {
@@ -71,13 +77,12 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _login() async {
-    if (!_formKey.currentState!.validate()) return;
+  if (!_formKey.currentState!.validate()) return;
 
-    setState(() {
-      _isLoading = true;
-      _errorMessage = null;
-    });
-
+  setState(() {
+    _isLoading = true;
+    _errorMessage = null;
+  });
     try {
       // Clear session terlebih dahulu sebelum login
       await _clearSession();
@@ -90,83 +95,72 @@ class _LoginPageState extends State<LoginPage> {
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', user.token);
       await prefs.setString('role', user.role);
-      await prefs.setString('user_email', emailController.text);
-
+      if (user.role == 'pembeli' && user.id != null) {
+        await prefs.setInt('id_pembeli', user.id!);
+      }
+      if(user.role == 'pegawai' && user.id_pegawai != null) {
+        await prefs.setString('id_pegawai', user.id_pegawai!);
+      }
       if (user.jabatan != null) {
         await prefs.setString('jabatan', user.jabatan!);
       }
 
-      print(
-          'Login successful - Role: ${user.role}, Token saved: ${user.token.substring(0, 20)}...');
+    // Dapatkan FCM token
+    String? fcmToken = await FirebaseMessaging.instance.getToken();
+    if (fcmToken != null) {
+      // Update FCM token ke server
+      await _updateFcmToken(user.token, fcmToken);
+    } else {
+      print('FCM Token tidak tersedia');
+    }
 
-      // Dapatkan FCM token
-      String? fcmToken = await FirebaseMessaging.instance.getToken();
-      if (fcmToken != null) {
-        await _updateFcmToken(user.token, fcmToken);
-      } else {
-        print('FCM Token not available');
-      }
-
-      // Navigasi berdasarkan role (hanya pembeli dan penitip)
-      if (mounted) {
-        if (user.role == 'pembeli') {
-          print('Navigating to Pembeli Home');
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const Pembelihome()),
-          );
-        } else if (user.role == 'penitip') {
-          print('Navigating to Penitip Home');
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
+    // Navigasi berdasarkan role
+    if (user.role == 'pembeli') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Pembelihome()),
+      );
+    } else if (user.role == 'penitip') {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
               // ✅ Fixed: Pass token as named parameter properly
               builder: (context) => SellerProfilePage(token: user.token),
             ),
-          );
-        }
-        // Comment dulu untuk hunter dan kurir
-        /*
-        else if (user.role == 'pegawai') {
-          if (user.jabatan == 'hunter') {
-            print('Navigating to Hunter Home');
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const HunterProfilePage()),
-            );
-          } else if (user.jabatan == 'kurir') {
-            print('Navigating to Kurir Home');
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const CourierProfilePage()),
-            );
-          } else {
-            setState(() {
-              _errorMessage = 'Jabatan tidak dikenali: ${user.jabatan}';
-            });
-          }
-        } 
-        */
-        else {
-          setState(() {
-            _errorMessage =
-                'Role tidak dikenali atau belum tersedia: ${user.role}';
-          });
-        }
+      );
+    } else if (user.role == 'pegawai') {
+      if (user.jabatan == 'hunter') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HunterProfilePage()),
+        );
+      } else if (user.jabatan == 'kurir') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => CourierProfilePage(token: user.token),
+          ),
+        );
+      } else {
+        setState(() {
+          _errorMessage = 'Jabatan tidak dikenali';
+        });
       }
-    } catch (e) {
-      print('Login error: $e');
+    } else {
       setState(() {
-        _errorMessage = e.toString();
-      });
-    } finally {
-      setState(() {
-        _isLoading = false;
+        _errorMessage = 'Role tidak dikenali';
       });
     }
+  } catch (e) {
+    setState(() {
+      _errorMessage = e.toString();
+    });
+  } finally {
+    setState(() {
+      _isLoading = false;
+    });
   }
+}
 
   @override
   Widget build(BuildContext context) {

@@ -15,6 +15,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'firebase_options.dart';
+import 'package:intl/intl.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
@@ -35,6 +37,7 @@ Future<void> main() async {
     updateFcmTokenOnServer(newToken);
   });
 
+  await initializeDateFormatting('id_ID', null);
   runApp(const ProviderScope(child: MainApp()));
 }
 
