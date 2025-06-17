@@ -15,7 +15,8 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage>
+    with SingleTickerProviderStateMixin {
   late TabController tabController;
   final TextEditingController searchController = TextEditingController();
   final ProdukClient produkClient = ProdukClient();
@@ -54,7 +55,10 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       print('Kategori diterima: ${fetchedCategories.length}');
       setState(() {
         products = fetchedProducts;
-        categories = [Kategori(id: 0, name: 'Semua Kategori'), ...fetchedCategories];
+        categories = [
+          Kategori(id: 0, name: 'Semua Kategori'),
+          ...fetchedCategories
+        ];
         isLoading = false;
       });
     } catch (e) {
@@ -71,7 +75,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   String formatCurrency(double amount) {
-    final formatter = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
+    final formatter =
+        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp', decimalDigits: 0);
     return formatter.format(amount);
   }
 
@@ -95,7 +100,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.shopping_cart, color: Color(0xFF4C3D19), size: 24),
+            icon: const Icon(Icons.shopping_cart,
+                color: Color(0xFF4C3D19), size: 24),
             onPressed: () {
               if (!isLoggedIn) {
                 Navigator.push(
@@ -148,8 +154,11 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
 
   Widget homePageContent(double screenWidth, double screenHeight) {
     final filteredProducts = products.where((product) {
-      final matchesSearch = product.name.toLowerCase().contains(searchController.text.toLowerCase());
-      final matchesCategory = selectedCategory == 'Semua Kategori' || product.category == selectedCategory;
+      final matchesSearch = product.name
+          .toLowerCase()
+          .contains(searchController.text.toLowerCase());
+      final matchesCategory = selectedCategory == 'Semua Kategori' ||
+          product.category == selectedCategory;
       final isAvailable = product.status_produk == 'tersedia';
       return matchesSearch && matchesCategory && isAvailable;
     }).toList();
@@ -157,7 +166,6 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     return SingleChildScrollView(
       child: Column(
         children: [
-
           // Banner
           Container(
             margin: const EdgeInsets.all(12),
@@ -178,48 +186,13 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       fit: BoxFit.cover,
                     ),
                   ),
-                  Positioned.fill(
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(16),
-                        color: Colors.black.withOpacity(0.3),
-                      ),
-                      child: Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Text(
-                            'Selamat datang di ReUseMart! Temukan produk bekas berkualitas untuk gaya hidup berkelanjutan.',
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize:
-                                  MediaQuery.of(context).size.width * 0.035,
-                              height: 1.2,
-                            ),
-                            maxLines: 3,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Padding(
-                padding: EdgeInsets.only(left: 9.0),
-                child: Text(
-                  'Pilih Kategori:',
-                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Positioned.fill(
                   child: Container(
-                    color: Colors.black.withOpacity(0.3),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(16),
+                      color: Colors.black.withOpacity(0.3),
+                    ),
                     child: Center(
                       child: Padding(
                         padding: const EdgeInsets.all(8),
@@ -241,6 +214,19 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
               ],
             ),
           ),
+          const SizedBox(height: 16),
+          // Pilih Kategori
+          Padding(
+            padding: const EdgeInsets.only(left: 12.0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                'Pilih Kategori:',
+                style: TextStyle(
+                    fontWeight: FontWeight.bold, fontSize: screenWidth * 0.04),
+              ),
+            ),
+          ),
           // Search and Category Filter
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -255,14 +241,16 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       hintStyle: TextStyle(fontSize: screenWidth * 0.04),
                       filled: true,
                       fillColor: Colors.white,
-                      prefixIcon: const Icon(Icons.search, color: Color(0xFF4C3D19), size: 20),
+                      prefixIcon: const Icon(Icons.search,
+                          color: Color(0xFF4C3D19), size: 20),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: const BorderSide(color: Color(0xFF4C3D19)),
                       ),
                       contentPadding: const EdgeInsets.symmetric(vertical: 10),
                     ),
-                    style: TextStyle(color: Color(0xFF4C3D19), fontSize: screenWidth * 0.04),
+                    style: TextStyle(
+                        color: Color(0xFF4C3D19), fontSize: screenWidth * 0.04),
                   ),
                 ),
                 const SizedBox(width: 8),
@@ -292,7 +280,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                         borderRadius: BorderRadius.circular(8),
                         borderSide: const BorderSide(color: Color(0xFF4C3D19)),
                       ),
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 10),
                     ),
                     dropdownColor: const Color(0xFFE5D7C4),
                     style: const TextStyle(color: Color(0xFF4C3D19)),
@@ -307,18 +296,25 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             child: isLoading
                 ? const Center(child: CircularProgressIndicator())
                 : error != null
-                    ? Center(child: Text(error!, style: TextStyle(color: Color(0xFF4C3D19), fontSize: screenWidth * 0.04)))
+                    ? Center(
+                        child: Text(error!,
+                            style: TextStyle(
+                                color: Color(0xFF4C3D19),
+                                fontSize: screenWidth * 0.04)))
                     : filteredProducts.isEmpty
                         ? Center(
                             child: Text(
                               'Tidak ada produk tersedia.',
-                              style: TextStyle(color: Color(0xFF4C3D19), fontSize: screenWidth * 0.04),
+                              style: TextStyle(
+                                  color: Color(0xFF4C3D19),
+                                  fontSize: screenWidth * 0.04),
                             ),
                           )
                         : GridView.builder(
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                            gridDelegate:
+                                SliverGridDelegateWithFixedCrossAxisCount(
                               crossAxisCount: 2,
                               crossAxisSpacing: 8,
                               mainAxisSpacing: 8,
@@ -332,7 +328,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => ProductDetailPage(productId: product.id),
+                                      builder: (context) => ProductDetailPage(
+                                          productId: product.id),
                                     ),
                                   );
                                 },
@@ -342,18 +339,23 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                     borderRadius: BorderRadius.circular(8),
                                   ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Expanded(
                                         child: Stack(
                                           children: [
                                             ClipRRect(
-                                              borderRadius: const BorderRadius.vertical(top: Radius.circular(8)),
+                                              borderRadius:
+                                                  const BorderRadius.vertical(
+                                                      top: Radius.circular(8)),
                                               child: Image.network(
                                                 product.mainImage,
                                                 width: double.infinity,
                                                 fit: BoxFit.cover,
-                                                errorBuilder: (context, error, stackTrace) => Image.asset(
+                                                errorBuilder: (context, error,
+                                                        stackTrace) =>
+                                                    Image.asset(
                                                   'assets/placeholder.jpg',
                                                   fit: BoxFit.cover,
                                                 ),
@@ -363,18 +365,30 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                               top: 6,
                                               left: 6,
                                               child: Container(
-                                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                        horizontal: 6,
+                                                        vertical: 3),
                                                 decoration: BoxDecoration(
-                                                  color: product.warranty != null
-                                                      ? (product.isWarrantyActive ? const Color(0xFF354024) : Colors.red[600])
+                                                  color: product.warranty !=
+                                                          null
+                                                      ? (product
+                                                              .isWarrantyActive
+                                                          ? const Color(
+                                                              0xFF354024)
+                                                          : Colors.red[600])
                                                       : Colors.grey[600],
-                                                  borderRadius: BorderRadius.circular(4),
+                                                  borderRadius:
+                                                      BorderRadius.circular(4),
                                                 ),
                                                 child: Text(
                                                   product.warranty != null
                                                       ? 'Garansi s/d: ${product.warranty} (${product.warrantyStatus})'
                                                       : 'Tanpa Garansi',
-                                                  style: TextStyle(color: Colors.white, fontSize: screenWidth * 0.03),
+                                                  style: TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize:
+                                                          screenWidth * 0.03),
                                                 ),
                                               ),
                                             ),
@@ -384,7 +398,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                       Padding(
                                         padding: const EdgeInsets.all(6),
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               product.name,
@@ -402,46 +417,75 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                                 return Icon(
                                                   Icons.star,
                                                   size: screenWidth * 0.035,
-                                                  color: i < product.rating ? Colors.yellow[400] : Colors.grey[300],
+                                                  color: i < product.rating
+                                                      ? Colors.yellow[400]
+                                                      : Colors.grey[300],
                                                 );
                                               }),
                                             ),
                                             const SizedBox(height: 4),
                                             Text(
                                               'Harga: ${formatCurrency(product.price)}',
-                                              style: TextStyle(color: const Color(0xFFCFB899), fontSize: screenWidth * 0.035),
+                                              style: TextStyle(
+                                                  color:
+                                                      const Color(0xFFCFB899),
+                                                  fontSize: screenWidth * 0.04),
                                             ),
                                             const SizedBox(height: 6),
                                             Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               children: [
                                                 ElevatedButton(
                                                   onPressed: () {
                                                     if (!isLoggedIn) {
                                                       Navigator.push(
                                                         context,
-                                                        MaterialPageRoute(builder: (context) => const LoginPage()),
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const LoginPage()),
                                                       );
                                                       return;
                                                     }
-                                                    ScaffoldMessenger.of(context).showSnackBar(
-                                                      SnackBar(content: Text('Produk ${product.id} ditambahkan ke keranjang!')),
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                          content: Text(
+                                                              'Produk ${product.id} ditambahkan ke keranjang!')),
                                                     );
                                                   },
-                                                  style: ElevatedButton.styleFrom(
-                                                    backgroundColor: const Color(0xFFCFB899),
-                                                    foregroundColor: const Color(0xFF4C3D19),
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(6),
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        const Color(0xFFCFB899),
+                                                    foregroundColor:
+                                                        const Color(0xFF4C3D19),
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              6),
                                                     ),
-                                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                                                    minimumSize: Size(screenWidth * 0.18, 0),
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 6,
+                                                        vertical: 4),
+                                                    minimumSize: Size(
+                                                        screenWidth * 0.18, 0),
                                                   ),
                                                   child: Row(
                                                     children: [
-                                                      Icon(Icons.shopping_cart, size: screenWidth * 0.035),
+                                                      Icon(Icons.shopping_cart,
+                                                          size: screenWidth *
+                                                              0.035),
                                                       const SizedBox(width: 4),
-                                                      Text('Sale', style: TextStyle(fontSize: screenWidth * 0.03)),
+                                                      Text('Sale',
+                                                          style: TextStyle(
+                                                              fontSize:
+                                                                  screenWidth *
+                                                                      0.03)),
                                                     ],
                                                   ),
                                                 ),
@@ -450,28 +494,50 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                                                     if (!isLoggedIn) {
                                                       Navigator.push(
                                                         context,
-                                                        MaterialPageRoute(builder: (context) => const LoginPage()),
+                                                        MaterialPageRoute(
+                                                            builder: (context) =>
+                                                                const LoginPage()),
                                                       );
                                                       return;
                                                     }
-                                                    ScaffoldMessenger.of(context).showSnackBar(
-                                                      SnackBar(content: Text('Navigasi ke checkout untuk ${product.id}')),
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      SnackBar(
+                                                          content: Text(
+                                                              'Navigasi ke checkout untuk ${product.id}')),
                                                     );
                                                   },
-                                                  style: ElevatedButton.styleFrom(
-                                                    backgroundColor: const Color(0xFF354024),
-                                                    foregroundColor: Colors.white,
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius: BorderRadius.circular(6),
+                                                  style:
+                                                      ElevatedButton.styleFrom(
+                                                    backgroundColor:
+                                                        const Color(0xFF354024),
+                                                    foregroundColor:
+                                                        Colors.white,
+                                                    shape:
+                                                        RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              6),
                                                     ),
-                                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 4),
-                                                    minimumSize: Size(screenWidth * 0.18, 0),
+                                                    padding: const EdgeInsets
+                                                        .symmetric(
+                                                        horizontal: 6,
+                                                        vertical: 4),
+                                                    minimumSize: Size(
+                                                        screenWidth * 0.18, 0),
                                                   ),
                                                   child: Row(
                                                     children: [
-                                                      Icon(Icons.shopping_bag, size: screenWidth * 0.035),
+                                                      Icon(Icons.shopping_bag,
+                                                          size: screenWidth *
+                                                              0.035),
                                                       const SizedBox(width: 4),
-                                                      Text('Beli', style: TextStyle(fontSize: screenWidth * 0.03)),
+                                                      Text('Beli',
+                                                          style: TextStyle(
+                                                              fontSize:
+                                                                  screenWidth *
+                                                                      0.03)),
                                                     ],
                                                   ),
                                                 ),
@@ -487,8 +553,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                             },
                           ),
           ),
-          ],
-        ),
-      );
-    }
+        ],
+      ),
+    );
   }
+}

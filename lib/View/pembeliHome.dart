@@ -153,8 +153,7 @@ class _PembelihomeState extends State<Pembelihome> {
 
   Future<void> _fetchOrders() async {
     try {
-      print(
-          'Fetching orders with token: ${token?.substring(0, 20) ?? 'null'}...');
+      print('Fetching orders with token: ${token?.substring(0, 20)}...');
       if (token == null || token!.isEmpty) {
         throw Exception('Token tidak tersedia');
       }
