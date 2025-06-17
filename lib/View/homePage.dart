@@ -157,6 +157,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     return SingleChildScrollView(
       child: Column(
         children: [
+
           // Banner
           Container(
             margin: const EdgeInsets.all(12),
@@ -177,6 +178,44 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                       fit: BoxFit.cover,
                     ),
                   ),
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(16),
+                        color: Colors.black.withOpacity(0.3),
+                      ),
+                      child: Center(
+                        child: Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: Text(
+                            'Selamat datang di ReUseMart! Temukan produk bekas berkualitas untuk gaya hidup berkelanjutan.',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize:
+                                  MediaQuery.of(context).size.width * 0.035,
+                              height: 1.2,
+                            ),
+                            maxLines: 3,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Padding(
+                padding: EdgeInsets.only(left: 9.0),
+                child: Text(
+                  'Pilih Kategori:',
+                  style: TextStyle(fontWeight: FontWeight.bold),
                 ),
                 Positioned.fill(
                   child: Container(

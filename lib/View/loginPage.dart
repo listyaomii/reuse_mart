@@ -26,8 +26,12 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   String? _errorMessage;
 
-  static const String baseUrl =
-      'http://192.168.120.61:8000'; // IP komputer, sesuai ipconfig
+
+  //static const String baseUrl =
+      //'http://192.168.120.61:8000'; // IP komputer, sesuai ipconfig
+
+  static const String baseUrl = 'http://10.0.2.2:8000';
+
 
   Future<void> _updateFcmToken(String token, String fcmToken) async {
     try {
@@ -61,6 +65,17 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
+  // Clear session sebelum login baru
+  Future<void> _clearSession() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.clear();
+      print('Session cleared successfully');
+    } catch (e) {
+      print('Error clearing session: $e');
+    }
+  }
+
   Future<void> _login() async {
   if (!_formKey.currentState!.validate()) return;
 
@@ -68,13 +83,15 @@ class _LoginPageState extends State<LoginPage> {
     _isLoading = true;
     _errorMessage = null;
   });
+    try {
+      // Clear session terlebih dahulu sebelum login
+      await _clearSession();
 
-  try {
-    final authService = AuthService();
-    final user = await authService.login(
-        emailController.text, passwordController.text);
+      final authService = AuthService();
+      final user = await authService.login(
+          emailController.text, passwordController.text);
 
-      // Simpan token dan role ke SharedPreferences
+      // Simpan data session baru
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('auth_token', user.token);
       await prefs.setString('role', user.role);
@@ -106,7 +123,10 @@ class _LoginPageState extends State<LoginPage> {
     } else if (user.role == 'penitip') {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const SellerProfilePage()),
+        MaterialPageRoute(
+              // ✅ Fixed: Pass token as named parameter properly
+              builder: (context) => SellerProfilePage(token: user.token),
+            ),
       );
     } else if (user.role == 'pegawai') {
       if (user.jabatan == 'hunter') {
@@ -209,14 +229,29 @@ class _LoginPageState extends State<LoginPage> {
               ),
               const SizedBox(height: 16),
               if (_errorMessage != null)
-                Text(
-                  _errorMessage!,
-                  style: const TextStyle(color: Colors.red),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: Colors.red.withOpacity(0.3)),
+                  ),
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.red),
+                    textAlign: TextAlign.center,
+                  ),
                 ),
               const SizedBox(height: 20),
               _isLoading
-                  ? const CircularProgressIndicator(
-                      color: Color(0xFF354024),
+                  ? const Column(
+                      children: [
+                        CircularProgressIndicator(
+                          color: Color(0xFF354024),
+                        ),
+                        SizedBox(height: 8),
+                        Text('Sedang login...'),
+                      ],
                     )
                   : ElevatedButton(
                       onPressed: _login,

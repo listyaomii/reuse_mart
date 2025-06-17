@@ -8,7 +8,10 @@ import 'dart:async'; // Tambahkan impor ini
 import 'package:firebase_messaging/firebase_messaging.dart'; // Tambahkan impor ini
 
 class AuthService {
-  static const String baseUrl = 'http://192.168.35.56:8000'; // IP komputer, sesuai ipconfig
+
+  //static const String baseUrl = 'http://192.168.35.56:8000'; // IP komputer, sesuai ipconfig
+  static const String baseUrl =
+      'http://10.0.2.2:8000'; // IP komputer, sesuai ipconfig
   static const String endpoint = 'api/login';
 
   Future<User> login(String email, String password) async {
@@ -17,14 +20,16 @@ class AuthService {
       print('Mencoba koneksi ke: $uri');
       print('Data: ${jsonEncode({'email': email, 'password': password})}');
 
-      final response = await http.post(
+      final response = await http
+          .post(
         uri,
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
         },
         body: jsonEncode({'email': email, 'password': password}),
-      ).timeout(
+      )
+          .timeout(
         const Duration(seconds: 60), // Naikkan ke 60 detik
         onTimeout: () {
           throw TimeoutException('Request ke server timeout');
@@ -72,16 +77,19 @@ class AuthService {
   // Fungsi untuk memperbarui FCM token di server (opsional)
   Future<void> updateFcmToken(String authToken, String fcmToken) async {
     try {
-      final uri = Uri.parse('$baseUrl/api/update-fcm-token'); // Sesuaikan endpoint
-      final response = await http.post(
-        uri,
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $authToken',
-        },
-        body: jsonEncode({'fcm_token': fcmToken}),
-      ).timeout(const Duration(seconds: 60));
+      final uri =
+          Uri.parse('$baseUrl/api/update-fcm-token'); // Sesuaikan endpoint
+      final response = await http
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $authToken',
+            },
+            body: jsonEncode({'fcm_token': fcmToken}),
+          )
+          .timeout(const Duration(seconds: 60));
 
       if (response.statusCode != 200) {
         print('Gagal memperbarui FCM token: ${response.body}');
