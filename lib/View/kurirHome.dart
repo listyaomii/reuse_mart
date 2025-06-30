@@ -34,7 +34,6 @@ class _CourierProfilePageState extends State<CourierProfilePage> {
         _errorMessage = null;
       });
       final profile = await _client.getProfileKurir(widget.token);
-      print('Profile Data: $profile'); // Debugging
       setState(() {
         _profile = profile;
         _isLoadingProfile = false;
@@ -66,7 +65,8 @@ class _CourierProfilePageState extends State<CourierProfilePage> {
     }
   }
 
-  Future<void> _updateDeliveryStatus(String idPenjualan, String newStatus) async {
+  Future<void> _updateDeliveryStatus(
+      String idPenjualan, String newStatus) async {
     try {
       setState(() {
         _isLoadingTasks = true;
@@ -80,6 +80,12 @@ class _CourierProfilePageState extends State<CourierProfilePage> {
         _isLoadingTasks = false;
       });
     }
+  }
+
+  String formatRupiah(dynamic value) {
+    final doubleVal = double.tryParse(value.toString()) ?? 0.0;
+    return NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ')
+        .format(doubleVal);
   }
 
   @override
@@ -111,7 +117,9 @@ class _CourierProfilePageState extends State<CourierProfilePage> {
       body: _isLoadingProfile || _isLoadingTasks
           ? const Center(child: CircularProgressIndicator())
           : _errorMessage != null
-              ? Center(child: Text(_errorMessage!, style: const TextStyle(color: Colors.red)))
+              ? Center(
+                  child: Text(_errorMessage!,
+                      style: const TextStyle(color: Colors.red)))
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -175,7 +183,7 @@ class _CourierProfilePageState extends State<CourierProfilePage> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  'Saldo: ${_profile?['saldo_pegawai'] != null ? NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ').format(_profile!['saldo_pegawai']) : 'N/A'}',
+                  'Saldo: ${_profile?['saldo_pegawai'] != null ? formatRupiah(_profile!['saldo_pegawai']) : 'N/A'}',
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.green[700],
@@ -190,165 +198,171 @@ class _CourierProfilePageState extends State<CourierProfilePage> {
     );
   }
 
-Widget _buildDeliveryHistorySection() {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      const Text(
-        'Riwayat Tugas Pengiriman',
-        style: TextStyle(
-          fontSize: 18,
-          fontWeight: FontWeight.bold,
-          color: Color(0xFF354024),
+  Widget _buildDeliveryHistorySection() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Riwayat Tugas Pengiriman',
+          style: TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Color(0xFF354024),
+          ),
         ),
-      ),
-      const SizedBox(height: 12),
-      deliveryTasks.isEmpty
-          ? const Center(
-              child: Text(
-                'Tidak ada riwayat pengiriman.',
-                style: TextStyle(color: Colors.grey),
-              ),
-            )
-          : ListView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: deliveryTasks.length,
-              itemBuilder: (context, index) {
-                final task = deliveryTasks[index];
+        const SizedBox(height: 12),
+        deliveryTasks.isEmpty
+            ? const Center(
+                child: Text(
+                  'Tidak ada riwayat pengiriman.',
+                  style: TextStyle(color: Colors.grey),
+                ),
+              )
+            : ListView.builder(
+                shrinkWrap: true,
+                physics: const NeverScrollableScrollPhysics(),
+                itemCount: deliveryTasks.length,
+                itemBuilder: (context, index) {
+                  final task = deliveryTasks[index];
 
-                String produkList = 'N/A';
-                if (task['detail_penjualan'] is List) {
-                  produkList = (task['detail_penjualan'] as List)
-                      .map((item) {
-                        final produk = item['produk'];
-                        if (produk is Map && produk['nama_produk'] != null) {
-                          return produk['nama_produk'];
-                        }
-                        return 'Produk tidak tersedia';
-                      })
-                      .join(', ');
-                }
+                  String produkList = 'N/A';
+                  if (task['detail_penjualan'] is List) {
+                    produkList = (task['detail_penjualan'] as List).map((item) {
+                      final produk = item['produk'];
+                      if (produk is Map && produk['nama_produk'] != null) {
+                        return produk['nama_produk'];
+                      }
+                      return 'Produk tidak tersedia';
+                    }).join(', ');
+                  }
 
-                return Card(
-                  color: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 4,
-                  margin: const EdgeInsets.only(bottom: 12),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(12),
-                    title: Text(
-                      'Tugas #${task['id_penjualan']}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFF354024),
+                  return Card(
+                    color: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    elevation: 4,
+                    margin: const EdgeInsets.only(bottom: 12),
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.all(12),
+                      title: Text(
+                        'Tugas #${task['id_penjualan']}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Color(0xFF354024),
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Pembeli: ${task['pembeli']?['nama_pembeli'] ?? 'N/A'}',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            'Item: $produkList',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          Text(
+                            'Tujuan: ${task['alamat']?['alamat'] ?? 'N/A'}',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          Text(
+                            'Total Harga: ${formatRupiah(task['total_harga'])}',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          Text(
+                            'Ongkir: ${formatRupiah(task['ongkir'])}',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          Text(
+                            'Tanggal: ${task['tanggal_pesan'] != null ? DateFormat('dd MMM yyyy').format(DateTime.parse(task['tanggal_pesan'])) : 'N/A'}',
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                            ),
+                          ),
+                          Text(
+                            'Status Pembayaran: ${task['status_pembayaran'] ?? 'N/A'}',
+                            style: TextStyle(
+                              color: task['status_pembayaran'] == 'valid'
+                                  ? Colors.green
+                                  : Colors.red,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            'Status: ${task['status_penjualan']}',
+                            style: TextStyle(
+                              color: task['status_penjualan'] == 'selesai'
+                                  ? Colors.green
+                                  : task['status_penjualan'] == 'dikirim'
+                                      ? Colors.orange
+                                      : Colors.grey[600],
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      trailing: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          ElevatedButton(
+                            onPressed:
+                                (task['status_penjualan'] == 'Dijadwalkan' ||
+                                        task['status_penjualan'] ==
+                                            'siap dikirim' ||
+                                        task['status_penjualan'] == 'Disiapkan')
+                                    ? () {
+                                        _updateDeliveryStatus(
+                                            task['id_penjualan'].toString(),
+                                            'dikirim');
+                                      }
+                                    : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF354024),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text('Kirim'),
+                          ),
+                          const SizedBox(width: 8),
+                          ElevatedButton(
+                            onPressed: task['status_penjualan'] == 'dikirim'
+                                ? () {
+                                    _updateDeliveryStatus(
+                                        task['id_penjualan'].toString(),
+                                        'selesai');
+                                  }
+                                : null,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFF354024),
+                              foregroundColor: Colors.white,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                            child: const Text('Selesai'),
+                          ),
+                        ],
                       ),
                     ),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          'Pembeli: ${task['pembeli']?['nama_pembeli'] ?? 'N/A'}',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        Text(
-                          'Item: $produkList',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        Text(
-                          'Tujuan: ${task['alamat']?['alamat'] ?? 'N/A'}',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        Text(
-                          'Total Harga: ${task['total_harga'] != null ? NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ').format(task['total_harga']) : 'N/A'}',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        Text(
-                          'Ongkir: ${task['ongkir'] != null ? NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ').format(task['ongkir']) : 'N/A'}',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        Text(
-                          'Tanggal: ${task['tanggal_pesan'] != null ? DateFormat('dd MMM yyyy').format(DateTime.parse(task['tanggal_pesan'])) : 'N/A'}',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                          ),
-                        ),
-                        Text(
-                          'Status Pembayaran: ${task['status_pembayaran'] ?? 'N/A'}',
-                          style: TextStyle(
-                            color: task['status_pembayaran'] == 'valid' ? Colors.green : Colors.red,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          'Status: ${task['status_penjualan']}',
-                          style: TextStyle(
-                            color: task['status_penjualan'] == 'selesai'
-                                ? Colors.green
-                                : task['status_penjualan'] == 'dikirim'
-                                    ? Colors.orange
-                                    : Colors.grey[600],
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        ElevatedButton(
-                          onPressed: (task['status_penjualan'] == 'Dijadwalkan' ||
-                                  task['status_penjualan'] == 'siap dikirim' ||
-                                  task['status_penjualan'] == 'Disiapkan')
-                              ? () {
-                                  _updateDeliveryStatus(task['id_penjualan'].toString(), 'dikirim');
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF354024),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text('Kirim'),
-                        ),
-                        const SizedBox(width: 8),
-                        ElevatedButton(
-                          onPressed: task['status_penjualan'] == 'dikirim'
-                              ? () {
-                                  _updateDeliveryStatus(task['id_penjualan'].toString(), 'selesai');
-                                }
-                              : null,
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF354024),
-                            foregroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                          ),
-                          child: const Text('Selesai'),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
-              },
-            ),
-    ],
-  );
-}
+                  );
+                },
+              ),
+      ],
+    );
+  }
 }

@@ -4,7 +4,7 @@ import 'package:reuse_mart/entity/TopSeller.dart';
 import 'package:reuse_mart/entity/penitip.dart';
 
 class TopSellerClient {
-  static const String baseUrl = 'http://10.0.2.2:8000';
+  static const String baseUrl = 'https://api2.reuse-mart.com';
 
   // Fungsi untuk mengambil data Top Seller
   static Future<TopSeller> getTopSeller(String token) async {

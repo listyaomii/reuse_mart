@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:reuse_mart/entity/TransaksiPenjualan.dart';
 
 class TransaksiPenjualanClient {
-  static const String baseUrl = 'http://10.0.2.2:8000';
+  static const String baseUrl = 'https://api2.reuse-mart.com';
   static const String endpoint = 'api/transaksi/penjualan';
 
   static Future<List<TransaksiPenjualan>> fetchAll(String token) async {

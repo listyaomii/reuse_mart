@@ -17,7 +17,7 @@ class KomisiClient {
       }
 
       final response = await http.get(
-        Uri.parse('$baseUrl/api/komisi/$idPegawai'),
+        Uri.parse('$baseUrl/api/komisi-history/$idPegawai'),
         headers: {
           'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',

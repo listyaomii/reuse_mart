@@ -9,6 +9,8 @@ import 'package:reuse_mart/entity/TransaksiPenjualan.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reuse_mart/View/detailProduk.dart';
 import 'package:reuse_mart/services/auth_service.dart';
+import 'package:reuse_mart/view/loginPage.dart';
+import 'package:reuse_mart/View/merchandisePage.dart'; // Import halaman katalog
 import 'dart:convert';
 
 class Pembelihome extends StatefulWidget {
@@ -46,6 +48,32 @@ class _PembelihomeState extends State<Pembelihome> {
     _notificationService.initialize(context);
     _notificationService.checkInitialMessage(context);
     _loadTokenAndFetchData();
+  }
+
+  Future _navigateToMerchandisePage() async {
+    final prefs = await SharedPreferences.getInstance();
+    final authToken = prefs.getString('auth_token');
+    final role = prefs.getString('role');
+
+    if (authToken != null || role == 'pembeli') {
+      // Jika tidak ada token atau bukan pembeli, arahkan ke halaman login
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const MerchandisePage()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please log in as a pembeli to access merchandise.'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginPage()),
+      );
+    }
+    // Jika sudah login sebagai pembeli, arahkan ke halaman merchandise
   }
 
   // Atur format tanggal lokal
@@ -200,6 +228,17 @@ class _PembelihomeState extends State<Pembelihome> {
         title: const Text('Profil',
             style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.card_giftcard, color: Colors.white),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                    builder: (context) => const MerchandisePage()),
+              );
+            },
+            tooltip: 'Katalog Merchandise',
+          ),
           TextButton(
             onPressed: _logout, // Tombol logout
             child: const Text('Logout', style: TextStyle(color: Colors.white)),

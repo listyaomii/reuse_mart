@@ -8,7 +8,7 @@ import 'package:reuse_mart/view/loginPage.dart';
 const Color _primaryColor = Color(0xFF354024);
 const Color _backgroundColor = Color(0xFFCFBB99);
 const Color _disabledColor = Color(0xFFBBBBBB);
-const String _baseUrl = 'http://192.168.35.56:8000';
+const String _baseUrl = 'https://api2.reuse-mart.com';
 
 class ClaimHistoryPage extends StatefulWidget {
   const ClaimHistoryPage({super.key});
@@ -69,7 +69,8 @@ class _ClaimHistoryPageState extends State<ClaimHistoryPage> {
       }
 
       final response = await http.get(
-        Uri.parse('$_baseUrl/api/claim-merchandise/pembeli?id_pembeli=$_idPembeli'),
+        Uri.parse(
+            '$_baseUrl/api/claim-merchandise/pembeli?id_pembeli=$_idPembeli'),
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -83,12 +84,14 @@ class _ClaimHistoryPageState extends State<ClaimHistoryPage> {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body)['data'] as List;
         setState(() {
-          _claimList = data.map((item) => {
-            'nama_merch': item['merchandise']['nama_merch'],
-            'poin_tukar': item['merchandise']['poin_tukar'],
-            'tanggal_pengajuan': item['tanggal_pengajuan'],
-            'status_ambil': item['status_ambil'],
-          }).toList();
+          _claimList = data
+              .map((item) => {
+                    'nama_merch': item['merchandise']['nama_merch'],
+                    'poin_tukar': item['merchandise']['poin_tukar'],
+                    'tanggal_pengajuan': item['tanggal_pengajuan'],
+                    'status_ambil': item['status_ambil'],
+                  })
+              .toList();
           _isLoading = false;
         });
       } else {
@@ -157,7 +160,8 @@ class _ClaimHistoryPageState extends State<ClaimHistoryPage> {
   // Build page body
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: _primaryColor));
+      return const Center(
+          child: CircularProgressIndicator(color: _primaryColor));
     }
     if (_errorMessage != null) {
       return Center(

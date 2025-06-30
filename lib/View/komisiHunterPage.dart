@@ -20,7 +20,8 @@ class KomisiPage extends StatefulWidget {
 }
 
 class _KomisiPageState extends State<KomisiPage> {
-  final KomisiClient _komisiClient = KomisiClient(baseUrl: 'http://192.168.35.56:8000');
+  final KomisiClient _komisiClient =
+      KomisiClient(baseUrl: 'https://api2.reuse-mart.com');
   List<Komisi> _komisiList = [];
   bool _isLoading = false;
   String? _error;
@@ -39,7 +40,8 @@ class _KomisiPageState extends State<KomisiPage> {
     });
 
     try {
-      final komisiList = await _komisiClient.getKomisiByPegawai(widget.idPegawai);
+      final komisiList =
+          await _komisiClient.getKomisiByPegawai(widget.idPegawai);
       setState(() {
         _komisiList = komisiList;
         _isLoading = false;
@@ -85,7 +87,8 @@ class _KomisiPageState extends State<KomisiPage> {
 
   /// Membangun daftar riwayat komisi
   Widget _buildCommissionHistorySection(BuildContext context) {
-    final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final currencyFormat =
+        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -127,7 +130,8 @@ class _KomisiPageState extends State<KomisiPage> {
                 physics: const NeverScrollableScrollPhysics(),
                 itemCount: _komisiList.length,
                 itemBuilder: (context, index) {
-                  final commission = _formatCommission(_komisiList[index], currencyFormat);
+                  final commission =
+                      _formatCommission(_komisiList[index], currencyFormat);
                   return Card(
                     color: cardColor,
                     shape: RoundedRectangleBorder(
@@ -172,14 +176,16 @@ class _KomisiPageState extends State<KomisiPage> {
   }
 
   /// Mengformat data komisi untuk UI
-  Map<String, dynamic> _formatCommission(Komisi komisi, NumberFormat currencyFormat) {
+  Map<String, dynamic> _formatCommission(
+      Komisi komisi, NumberFormat currencyFormat) {
     return {
       'nama_produk': komisi.namaProduk,
       'id_penjualan': komisi.idPenjualan.toString(),
       'harga_jual': komisi.hargaJual,
       'komisi_hunter': komisi.komisiHunter,
       'tanggal_bayar': komisi.tanggalBayar != 'Tidak tersedia'
-          ? DateFormat('dd MMMM yyyy', 'id_ID').format(DateTime.parse(komisi.tanggalBayar))
+          ? DateFormat('dd MMMM yyyy', 'id_ID')
+              .format(DateTime.parse(komisi.tanggalBayar))
           : 'Tidak tersedia',
       'nama_penitip': komisi.namaPenitip,
     };
@@ -194,7 +200,8 @@ class CommissionDetailPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final currencyFormat = NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
+    final currencyFormat =
+        NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ', decimalDigits: 0);
 
     return Scaffold(
       backgroundColor: backgroundColor,

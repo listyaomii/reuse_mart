@@ -30,34 +30,48 @@ class Produk {
   factory Produk.fromJson(Map<String, dynamic> json) {
     final warrantyInfo = _checkWarrantyStatus(json['tgl_garansi']);
     final mainImage = json['gambar'] != null && json['gambar'].isNotEmpty
-        ? 'http://192.168.35.56:8000/storage/${json['gambar'][0]['nama_gambar']}'
+        ? 'https://api2.reuse-mart.com/storage/${json['gambar'][0]['nama_gambar']}'
         : '/placeholder.jpg';
 
     return Produk(
       id: json['kode_produk'] ?? '',
       name: json['nama_produk'] ?? 'Unnamed Product',
       status_produk: json['status_produk'] ?? 'Tidak diketahui',
-      price: (json['harga_jual'] ?? json['harga_produk'] ?? 0).toDouble(),
+
+      // ✅ PERUBAHAN INI YANG PENTING
+      price: double.tryParse(json['harga_jual']?.toString() ?? '') ??
+          double.tryParse(json['harga_produk']?.toString() ?? '') ??
+          0,
+
       mainImage: mainImage,
       additionalImages: json['gambar'] != null
           ? (json['gambar'] as List)
-              .map((img) => 'http://192.168.35.56:8000/storage/${img['nama_gambar']}')
+              .map((img) =>
+                  'https://api2.reuse-mart.com/storage/${img['nama_gambar']}')
               .toList()
           : [],
-      category: json['kategori'] != null ? json['kategori']['nama_kategori'] ?? 'Lainnya' : 'Lainnya',
-      warranty: json['tgl_garansi'] != null ? _formatDate(json['tgl_garansi']) : null,
+      category: json['kategori'] != null
+          ? json['kategori']['nama_kategori'] ?? 'Lainnya'
+          : 'Lainnya',
+      warranty:
+          json['tgl_garansi'] != null ? _formatDate(json['tgl_garansi']) : null,
       warrantyStatus: warrantyInfo['status']!,
       isWarrantyActive: warrantyInfo['isActive']!,
-      rating: json['rating_penitip_rata'] != null
-          ? json['rating_penitip_rata'].toInt()
-          : (json['rating'] != null ? json['rating'].toInt() : (1 + (json['kode_produk'].hashCode % 5))),
-      description: json['deskripsi'] ?? json['deskripsi_produk'] ?? 'Tidak ada deskripsi tersedia.',
+      rating: int.tryParse(json['rating_penitip_rata']?.toString() ?? '') ??
+          int.tryParse(json['rating']?.toString() ?? '') ??
+          (1 + (json['kode_produk'].hashCode % 5)),
+
+      description: json['deskripsi'] ??
+          json['deskripsi_produk'] ??
+          'Tidak ada deskripsi tersedia.',
     );
   }
 }
 
 Map<String, dynamic> _checkWarrantyStatus(String? warrantyDate) {
-  if (warrantyDate == null || warrantyDate == '0000-00-00' || warrantyDate == '0000-00-00 00:00:00') {
+  if (warrantyDate == null ||
+      warrantyDate == '0000-00-00' ||
+      warrantyDate == '0000-00-00 00:00:00') {
     return {'status': 'Tidak ada garansi', 'isActive': false};
   }
   try {
@@ -73,7 +87,9 @@ Map<String, dynamic> _checkWarrantyStatus(String? warrantyDate) {
 }
 
 String _formatDate(String? dateString) {
-  if (dateString == null || dateString == '0000-00-00' || dateString == '0000-00-00 00:00:00') {
+  if (dateString == null ||
+      dateString == '0000-00-00' ||
+      dateString == '0000-00-00 00:00:00') {
     return 'Tidak ada';
   }
   try {
@@ -86,8 +102,18 @@ String _formatDate(String? dateString) {
 
 String _getMonthName(int month) {
   const months = [
-    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    'Januari',
+    'Februari',
+    'Maret',
+    'April',
+    'Mei',
+    'Juni',
+    'Juli',
+    'Agustus',
+    'September',
+    'Oktober',
+    'November',
+    'Desember'
   ];
   return months[month - 1];
 }

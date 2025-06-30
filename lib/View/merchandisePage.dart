@@ -11,7 +11,7 @@ import 'package:reuse_mart/view/riwayatMerch.dart'; // Import halaman baru
 const Color _primaryColor = Color(0xFF354024);
 const Color _backgroundColor = Color(0xFFCFBB99);
 const Color _disabledColor = Color(0xFFBBBBBB);
-const String _baseUrl = 'http://192.168.35.56:8000';
+const String _baseUrl = 'https://api2.reuse-mart.com';
 
 class MerchandisePage extends StatefulWidget {
   const MerchandisePage({super.key});
@@ -109,23 +109,26 @@ class _MerchandisePageState extends State<MerchandisePage> {
         throw Exception('Please log in as a pembeli.');
       }
 
-      final response = await http.post(
-        Uri.parse('$_baseUrl/api/claim-merchandise'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': 'Bearer $authToken',
-        },
-        body: jsonEncode({
-          'id_merch': merch.idMerch,
-          'id_pembeli': idPembeli,
-          'tanggal_pengajuan': DateTime.now().toIso8601String().split('T')[0],
-          'status_ambil': 'diproses',
-        }),
-      ).timeout(
-        const Duration(seconds: 60),
-        onTimeout: () => throw Exception('Claim request timed out'),
-      );
+      final response = await http
+          .post(
+            Uri.parse('$_baseUrl/api/claim-merchandise'),
+            headers: {
+              'Content-Type': 'application/json',
+              'Accept': 'application/json',
+              'Authorization': 'Bearer $authToken',
+            },
+            body: jsonEncode({
+              'id_merch': merch.idMerch,
+              'id_pembeli': idPembeli,
+              'tanggal_pengajuan':
+                  DateTime.now().toIso8601String().split('T')[0],
+              'status_ambil': 'diproses',
+            }),
+          )
+          .timeout(
+            const Duration(seconds: 60),
+            onTimeout: () => throw Exception('Claim request timed out'),
+          );
 
       if (response.statusCode == 201) {
         _showSnackBar('Successfully claimed ${merch.namaMerch}!');
@@ -170,12 +173,15 @@ class _MerchandisePageState extends State<MerchandisePage> {
         actions: [
           IconButton(
             icon: const Icon(Icons.history, color: Colors.white),
-            onPressed: _isAuthenticated ? () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const ClaimHistoryPage()),
-              );
-            } : null,
+            onPressed: _isAuthenticated
+                ? () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const ClaimHistoryPage()),
+                    );
+                  }
+                : null,
             tooltip: 'View Claim History',
           ),
         ],
@@ -191,11 +197,13 @@ class _MerchandisePageState extends State<MerchandisePage> {
   // Build page body
   Widget _buildBody() {
     if (_isLoading) {
-      return const Center(child: CircularProgressIndicator(color: _primaryColor));
+      return const Center(
+          child: CircularProgressIndicator(color: _primaryColor));
     }
     if (_errorMessage != null) {
       return Center(
-          child: Text(_errorMessage!, style: const TextStyle(color: Colors.red)));
+          child:
+              Text(_errorMessage!, style: const TextStyle(color: Colors.red)));
     }
     if (_merchandiseList.isEmpty) {
       return const Center(child: Text('No merchandise available'));
@@ -227,7 +235,8 @@ class _MerchandisePageState extends State<MerchandisePage> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       itemCount: _merchandiseList.length,
-      itemBuilder: (context, index) => _buildMerchandiseCard(_merchandiseList[index]),
+      itemBuilder: (context, index) =>
+          _buildMerchandiseCard(_merchandiseList[index]),
     );
   }
 
@@ -296,7 +305,9 @@ class _MerchandisePageState extends State<MerchandisePage> {
   // Build claim button
   Widget _buildClaimButton(Merchandise merch) {
     return ElevatedButton(
-      onPressed: merch.stokMerch > 0 ? () => _showClaimConfirmationDialog(merch) : null,
+      onPressed: merch.stokMerch > 0
+          ? () => _showClaimConfirmationDialog(merch)
+          : null,
       style: ElevatedButton.styleFrom(
         backgroundColor: _primaryColor,
         disabledBackgroundColor: _disabledColor,

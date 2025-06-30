@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'package:reuse_mart/entity/Pembeli.dart';
 
 class PembeliClient {
-  static const String baseUrl = 'http://10.0.2.2:8000';
+  static const String baseUrl = 'https://api2.reuse-mart.com';
   static const String endpoint = 'api/pembeli';
 
   static Future<List<Pembeli>> fetchAll(String token) async {

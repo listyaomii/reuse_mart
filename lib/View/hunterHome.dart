@@ -12,7 +12,8 @@ class HunterProfilePage extends StatefulWidget {
 }
 
 class _HunterProfilePageState extends State<HunterProfilePage> {
-  final PegawaiClient _pegawaiClient = PegawaiClient(baseUrl: 'http://192.168.35.56:8000');
+  final PegawaiClient _pegawaiClient =
+      PegawaiClient(baseUrl: 'https://api2.reuse-mart.com');
   Pegawai? _pegawai;
   bool _isLoading = false;
   String? _error;
@@ -84,9 +85,12 @@ class _HunterProfilePageState extends State<HunterProfilePage> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF354024)))
+          ? const Center(
+              child: CircularProgressIndicator(color: Color(0xFF354024)))
           : _error != null
-              ? Center(child: Text('Error: $_error', style: const TextStyle(color: Colors.red)))
+              ? Center(
+                  child: Text('Error: $_error',
+                      style: const TextStyle(color: Colors.red)))
               : SingleChildScrollView(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -157,13 +161,15 @@ class _HunterProfilePageState extends State<HunterProfilePage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => KomisiPage(idPegawai: idPegawai),
+                            builder: (context) =>
+                                KomisiPage(idPegawai: idPegawai),
                           ),
                         );
                       } else {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Text('ID pegawai tidak ditemukan. Silakan login kembali.'),
+                            content: Text(
+                                'ID pegawai tidak ditemukan. Silakan login kembali.'),
                           ),
                         );
                       }
@@ -184,7 +190,7 @@ class _HunterProfilePageState extends State<HunterProfilePage> {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        'Saldo: Rp${_pegawai?.saldoPegawai.toStringAsFixed(0) ?? '0'}',
+                        'Saldo: Rp${double.tryParse(_pegawai?.saldoPegawai.toString() ?? '0')?.toStringAsFixed(0) ?? '0'}',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,

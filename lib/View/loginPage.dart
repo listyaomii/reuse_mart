@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:reuse_mart/View/hunterHome.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:reuse_mart/entity/user.dart';
-import 'package:reuse_mart/client/loginClient.dart'; 
+import 'package:reuse_mart/client/loginClient.dart';
 import 'package:reuse_mart/view/pembeliHome.dart';
-import 'package:reuse_mart/view/penitipHome.dart'; 
-import 'package:reuse_mart/view/kurirHome.dart'; 
-import 'package:firebase_messaging/firebase_messaging.dart'; 
-import 'package:http/http.dart' as http; 
-import 'dart:convert'; 
+import 'package:reuse_mart/view/penitipHome.dart';
+import 'package:reuse_mart/view/kurirHome.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -26,12 +26,10 @@ class _LoginPageState extends State<LoginPage> {
   bool _isLoading = false;
   String? _errorMessage;
 
-
   //static const String baseUrl =
-      //'http://192.168.120.61:8000'; // IP komputer, sesuai ipconfig
+  //'https://api2.reuse-mart.com'; // IP komputer, sesuai ipconfig
 
-  static const String baseUrl = 'http://10.0.2.2:8000';
-
+  static const String baseUrl = 'https://api2.reuse-mart.com';
 
   Future<void> _updateFcmToken(String token, String fcmToken) async {
     try {
@@ -77,12 +75,12 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _login() async {
-  if (!_formKey.currentState!.validate()) return;
+    if (!_formKey.currentState!.validate()) return;
 
-  setState(() {
-    _isLoading = true;
-    _errorMessage = null;
-  });
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
     try {
       // Clear session terlebih dahulu sebelum login
       await _clearSession();
@@ -98,69 +96,69 @@ class _LoginPageState extends State<LoginPage> {
       if (user.role == 'pembeli' && user.id != null) {
         await prefs.setInt('id_pembeli', user.id!);
       }
-      if(user.role == 'pegawai' && user.id_pegawai != null) {
+      if (user.role == 'pegawai' && user.id_pegawai != null) {
         await prefs.setString('id_pegawai', user.id_pegawai!);
       }
       if (user.jabatan != null) {
         await prefs.setString('jabatan', user.jabatan!);
       }
 
-    // Dapatkan FCM token
-    String? fcmToken = await FirebaseMessaging.instance.getToken();
-    if (fcmToken != null) {
-      // Update FCM token ke server
-      await _updateFcmToken(user.token, fcmToken);
-    } else {
-      print('FCM Token tidak tersedia');
-    }
+      // Dapatkan FCM token
+      String? fcmToken = await FirebaseMessaging.instance.getToken();
+      if (fcmToken != null) {
+        // Update FCM token ke server
+        await _updateFcmToken(user.token, fcmToken);
+      } else {
+        print('FCM Token tidak tersedia');
+      }
 
-    // Navigasi berdasarkan role
-    if (user.role == 'pembeli') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const Pembelihome()),
-      );
-    } else if (user.role == 'penitip') {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-              // ✅ Fixed: Pass token as named parameter properly
-              builder: (context) => SellerProfilePage(token: user.token),
-            ),
-      );
-    } else if (user.role == 'pegawai') {
-      if (user.jabatan == 'hunter') {
+      // Navigasi berdasarkan role
+      if (user.role == 'pembeli') {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HunterProfilePage()),
+          MaterialPageRoute(builder: (context) => const Pembelihome()),
         );
-      } else if (user.jabatan == 'kurir') {
+      } else if (user.role == 'penitip') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => CourierProfilePage(token: user.token),
+            // ✅ Fixed: Pass token as named parameter properly
+            builder: (context) => SellerProfilePage(token: user.token),
           ),
         );
+      } else if (user.role == 'pegawai') {
+        if (user.jabatan == 'hunter') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const HunterProfilePage()),
+          );
+        } else if (user.jabatan == 'kurir') {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => CourierProfilePage(token: user.token),
+            ),
+          );
+        } else {
+          setState(() {
+            _errorMessage = 'Jabatan tidak dikenali';
+          });
+        }
       } else {
         setState(() {
-          _errorMessage = 'Jabatan tidak dikenali';
+          _errorMessage = 'Role tidak dikenali';
         });
       }
-    } else {
+    } catch (e) {
       setState(() {
-        _errorMessage = 'Role tidak dikenali';
+        _errorMessage = e.toString();
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
       });
     }
-  } catch (e) {
-    setState(() {
-      _errorMessage = e.toString();
-    });
-  } finally {
-    setState(() {
-      _isLoading = false;
-    });
   }
-}
 
   @override
   Widget build(BuildContext context) {
